@@ -14,10 +14,22 @@ const app = uWS
       console.log(`Opened connection: ${ws}, ${req}`)
     },
 
-    message: (ws) => {
+    message: (socket, message, isBinary) => {
       // called when a client sends a message
-      
-      console.log(`Message: ${ws.message}`)
+      // let json = JSON.parse(decoder.write(Buffer.from(message)));
+      const decoder = new TextDecoder();
+      const str = decoder.decode(message);
+      console.log(str);
+      if(str == "join") {
+        socket.subscribe('main');
+        console.log(`subscribing to main`);
+      }
+      if(str == "leave") {
+        socket.unsubscribe('main');
+        console.log(`unsubscribing to main`);
+      }
+      app.publish('main', str);
+      // ws.send(str);
     },
 
     close: (ws, code, message) => {
